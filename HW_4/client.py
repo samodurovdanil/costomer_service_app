@@ -1,5 +1,5 @@
 from socket import *
-import time, json
+import time, json, unittest
 
 
 def connect_to_server(command):
@@ -19,9 +19,17 @@ def connect_to_server(command):
         }
         s.send(json.dumps(presence_msg, sort_keys=True, indent=4).encode('utf-8'))
         data = json.loads(s.recv(1000000))
-        print('Сообщение от сервера: ', data['alert'])
-    else:
-        print('Подключение отменено!')
+        return 'Сообщение от сервера: ', data['alert']
+    elif command == 'y':
+        return 'Подключение отменено!'
 
 
-print(connect_to_server(input('Начать взаимодействие с сервером? (y/n)?: ')))
+# print(connect_to_server(input("Подключиться к серверу? (y/n): ")))
+
+class TestClient(unittest.TestCase):
+
+    def test_connection_on(self):
+        self.assertEqual(connect_to_server('y'), ('Сообщение от сервера: ', 'Connection settled'))
+
+    def test_connection_off(self):
+        self.assertEqual(connect_to_server('n'), 'Подключение отменено!')
